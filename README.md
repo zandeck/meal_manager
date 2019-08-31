@@ -1,12 +1,12 @@
 Basic project to be able to build a full stack application using rust as a backend.
 
 Goal of this app is to be able to manager my meals and receipes:
-	- Enter my receipes
-	- Build automatically shopping list with ingredients
-	- Be able to keep an update list of stuff I have at home to not buy all the time the same stuff
-	- Keep reccord of how much I paid for each ingredient in which shop
-	- Build a meal schedule
-	- Compute the amount of calories of each meal automatically
+- Enter my receipes
+- Build automatically shopping list with ingredients
+- Be able to keep an update list of stuff I have at home to not buy all the time the same stuff
+- Keep reccord of how much I paid for each ingredient in which shop
+- Build a meal schedule
+- Compute the amount of calories of each meal automatically
 
 This is the basic features I'd like to see implemented in it.
 
