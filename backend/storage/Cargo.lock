@@ -9,13 +9,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "backend_main"
-version = "0.1.0"
-dependencies = [
- "storage 0.1.0",
-]
-
-[[package]]
 name = "backtrace"
 version = "0.3.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
