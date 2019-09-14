@@ -1,6 +1,9 @@
 #[macro_use]
 extern crate diesel;
 
+#[macro_use]
+extern crate juniper;
+
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
@@ -11,6 +14,7 @@ pub mod schema;
 
 use models::Ingredient;
 use models::NewIngredient;
+pub use models::{create_schema, Schema};
 
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
