@@ -1,6 +1,14 @@
 use crate::schema::ingredients;
+use diesel::{r2d2, r2d2::ConnectionManager, r2d2::PooledConnection, PgConnection};
 use juniper::FieldResult;
 use juniper::RootNode;
+use std::sync::Arc;
+
+pub struct Context {
+    pub pool: r2d2::Pool<ConnectionManager<PgConnection>>,
+}
+
+impl juniper::Context for Context {}
 
 #[derive(Queryable, GraphQLObject)]
 #[graphql(description = "This is an ingredient that can be input in a recipe")]
@@ -24,7 +32,7 @@ pub struct Recipe {
 
 pub struct QueryRoot;
 
-graphql_object!( QueryRoot: () |&self| {
+graphql_object!( QueryRoot: Context |&self| {
     field apiVersion() -> &str {
         "1.0"
     }
@@ -41,7 +49,7 @@ graphql_object!( QueryRoot: () |&self| {
 pub struct MutationRoot;
 pub type Schema = RootNode<'static, QueryRoot, MutationRoot>;
 
-graphql_object!(MutationRoot: () |&self| {
+graphql_object!(MutationRoot: Context |&self| {
     field createHuman(&executor, new_ingredient: NewIngredient) -> FieldResult<Ingredient> {
          Ok(
             Ingredient {

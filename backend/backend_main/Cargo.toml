@@ -13,3 +13,5 @@ futures = "*"
 juniper = "*"
 serde_json = "*"
 env_logger = "*"
+diesel = { version = "*", features = [ "postgres", "r2d2" ] }
+dotenv = "0.14.1"

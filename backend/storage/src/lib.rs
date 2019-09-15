@@ -14,7 +14,7 @@ pub mod schema;
 
 use models::Ingredient;
 use models::NewIngredient;
-pub use models::{create_schema, Schema};
+pub use models::{create_schema, Context, Schema};
 
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
