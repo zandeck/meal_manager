@@ -1,11 +1,14 @@
 use crate::schema::ingredients;
+use diesel::prelude::*;
 use diesel::{r2d2, r2d2::ConnectionManager, r2d2::PooledConnection, PgConnection};
+use juniper;
 use juniper::FieldResult;
 use juniper::RootNode;
-use std::sync::Arc;
+
+type Connection = ConnectionManager<PgConnection>;
 
 pub struct Context {
-    pub pool: r2d2::Pool<ConnectionManager<PgConnection>>,
+    pub pool: r2d2::Pool<Connection>,
 }
 
 impl juniper::Context for Context {}
@@ -32,16 +35,33 @@ pub struct Recipe {
 
 pub struct QueryRoot;
 
+fn connection_from_pool(
+    ctx: &Context,
+) -> Result<PooledConnection<Connection>, juniper::FieldError> {
+    ctx.pool.get().map_err(|e| {
+        juniper::FieldError::new(
+            e,
+            juniper::graphql_value!({ "internal_error": "Connection to database" }),
+        )
+    })
+}
+
 graphql_object!( QueryRoot: Context |&self| {
     field apiVersion() -> &str {
         "1.0"
     }
 
     field ingredient(&executor, id: i32) -> FieldResult<Ingredient> {
-        Ok(
-            Ingredient {
-                id: 42,
-                name: "Dummy Ingredient".to_string(),
+        let connection = connection_from_pool(&executor.context())?;
+
+        ingredients::table
+            .filter(ingredients::id.eq(id))
+            .first::<Ingredient>(&connection)
+            .map_err(|e| {
+                juniper::FieldError::new(
+                    e,
+                    juniper::graphql_value!({ "internal_error": "Could not find ingredient in DB" })
+                )
             })
     }
 });
@@ -50,11 +70,17 @@ pub struct MutationRoot;
 pub type Schema = RootNode<'static, QueryRoot, MutationRoot>;
 
 graphql_object!(MutationRoot: Context |&self| {
-    field createHuman(&executor, new_ingredient: NewIngredient) -> FieldResult<Ingredient> {
-         Ok(
-            Ingredient {
-                id: 42,
-                name: "Lol ingredient".to_string(),
+    field createIngredient(&executor, new_ingredient: NewIngredient) -> FieldResult<Ingredient> {
+        let connection = connection_from_pool(&executor.context())?;
+
+        diesel::insert_into(ingredients::table)
+        .values(&new_ingredient)
+        .get_result(&connection)
+        .map_err(|e| {
+                juniper::FieldError::new(
+                    e,
+                    juniper::graphql_value!({ "internal_error": "Problem while inserting ingredient in DB" })
+                )
             })
     }
 });

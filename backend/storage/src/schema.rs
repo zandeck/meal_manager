@@ -34,9 +34,4 @@ joinable!(receipesingredientlist -> ingredients (ingredient_name));
 joinable!(receipesingredientlist -> receipes (receipe_id));
 joinable!(receipessteps -> receipes (receipe_id));
 
-allow_tables_to_appear_in_same_query!(
-    ingredients,
-    receipes,
-    receipesingredientlist,
-    receipessteps,
-);
+allow_tables_to_appear_in_same_query!(ingredients, receipes, receipesingredientlist, receipessteps,);
